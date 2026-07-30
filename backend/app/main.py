@@ -1,10 +1,12 @@
 import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy import text
 
 from app.core.config import settings
 from app.api.v1.auth import router as auth_router
 from app.api.v1.papers import router as papers_router
+from app.db.database import SessionLocal
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
@@ -41,4 +43,23 @@ def root():
         "status": "healthy",
         "service": settings.PROJECT_NAME,
         "docs": "/docs"
+    }
+
+
+@app.get("/health", tags=["Health"])
+def health_check():
+    """Liveness + DB connectivity check for monitoring and deployment probes."""
+    db_status = "unreachable"
+    try:
+        db = SessionLocal()
+        db.execute(text("SELECT 1"))
+        db.close()
+        db_status = "connected"
+    except Exception:
+        pass
+
+    return {
+        "status": "ok" if db_status == "connected" else "degraded",
+        "database": db_status,
+        "service": settings.PROJECT_NAME,
     }
