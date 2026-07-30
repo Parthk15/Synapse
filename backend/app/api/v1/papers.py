@@ -148,10 +148,19 @@ def upload_paper(
 
 @router.get("", response_model=List[PaperResponse])
 def list_papers(
+    status_filter: str = None,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    papers = db.query(Paper).filter(Paper.user_id == current_user.id).order_by(Paper.uploaded_at.desc()).all()
+    """
+    List all papers for the authenticated user.
+    Optionally filter by processing status via ?status_filter=<value>
+    (e.g. ready, processing, failed).
+    """
+    query = db.query(Paper).filter(Paper.user_id == current_user.id)
+    if status_filter:
+        query = query.filter(Paper.status == status_filter)
+    papers = query.order_by(Paper.uploaded_at.desc()).all()
     return papers
 
 
