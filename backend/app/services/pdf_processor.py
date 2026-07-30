@@ -1,3 +1,12 @@
+"""
+pdf_processor.py
+----------------
+Handles page-aware text extraction and chunking of PDF files using PyMuPDF (fitz).
+
+Each chunk preserves its originating page_number so downstream retrieval can
+cite exact source pages. Chunks are capped at ~400 words with a 50-word overlap
+to maintain context across chunk boundaries.
+"""
 import fitz  # PyMuPDF
 from typing import List, Dict, Any
 import logging
