@@ -98,6 +98,17 @@ def upload_paper(
             detail="Only PDF files are supported"
         )
 
+    # Enforce a 50 MB upload limit
+    MAX_FILE_SIZE_BYTES = 50 * 1024 * 1024  # 50 MB
+    file.file.seek(0, 2)  # Seek to end
+    file_size = file.file.tell()
+    file.file.seek(0)     # Reset to start
+    if file_size > MAX_FILE_SIZE_BYTES:
+        raise HTTPException(
+            status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+            detail=f"File too large. Maximum allowed size is 50 MB (got {file_size / 1024 / 1024:.1f} MB)."
+        )
+
     paper_id = str(uuid.uuid4())
     user_upload_dir = os.path.join(settings.UPLOAD_DIR, current_user.id)
     os.makedirs(user_upload_dir, exist_ok=True)
