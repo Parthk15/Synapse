@@ -1,6 +1,6 @@
 import uuid
 from datetime import datetime, timezone
-from sqlalchemy import Column, String, Integer, Text, DateTime, ForeignKey, JSON
+from sqlalchemy import Column, String, Integer, Text, DateTime, ForeignKey, JSON, event
 from sqlalchemy.orm import relationship
 
 from app.db.database import Base
@@ -18,6 +18,12 @@ class Paper(Base):
     page_count = Column(Integer, default=0, nullable=False)
     error_message = Column(Text, nullable=True)
     uploaded_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
+    updated_at = Column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        onupdate=lambda: datetime.now(timezone.utc),
+        nullable=False
+    )
 
     user = relationship("User", back_populates="papers")
     chunks = relationship("PaperChunk", back_populates="paper", cascade="all, delete-orphan", order_by="PaperChunk.chunk_index")

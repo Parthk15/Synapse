@@ -15,6 +15,7 @@ class PaperResponse(PaperBase):
     page_count: int
     error_message: Optional[str] = None
     uploaded_at: datetime
+    updated_at: Optional[datetime] = None
 
     class Config:
         from_attributes = True
