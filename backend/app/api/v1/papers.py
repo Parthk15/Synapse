@@ -2,7 +2,7 @@ import os
 import shutil
 import uuid
 import logging
-from typing import List
+from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, BackgroundTasks, status
 from sqlalchemy.orm import Session
 
@@ -148,19 +148,39 @@ def upload_paper(
 
 @router.get("", response_model=List[PaperResponse])
 def list_papers(
-    status_filter: str = None,
+    status_filter: Optional[str] = None,
+    skip: int = 0,
+    limit: int = 50,
+    sort_by: str = "uploaded_at",
+    sort_order: str = "desc",
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
     """
-    List all papers for the authenticated user.
-    Optionally filter by processing status via ?status_filter=<value>
-    (e.g. ready, processing, failed).
+    List all papers for the authenticated user with optional filtering, pagination, and sorting.
+
+    - **status_filter**: Filter by processing status (ready, processing, failed, uploaded)
+    - **skip**: Number of records to skip (for pagination)
+    - **limit**: Maximum records to return (max 200)
+    - **sort_by**: Field to sort by — uploaded_at | title | status | page_count
+    - **sort_order**: asc or desc
     """
+    # Clamp limit to a maximum to prevent abuse
+    limit = min(limit, 200)
+
+    # Validate sort field to prevent injection
+    VALID_SORT_FIELDS = {"uploaded_at", "title", "status", "page_count"}
+    if sort_by not in VALID_SORT_FIELDS:
+        sort_by = "uploaded_at"
+
+    sort_column = getattr(Paper, sort_by, Paper.uploaded_at)
+    order_expr = sort_column.desc() if sort_order.lower() == "desc" else sort_column.asc()
+
     query = db.query(Paper).filter(Paper.user_id == current_user.id)
     if status_filter:
         query = query.filter(Paper.status == status_filter)
-    papers = query.order_by(Paper.uploaded_at.desc()).all()
+
+    papers = query.order_by(order_expr).offset(skip).limit(limit).all()
     return papers
 
 
