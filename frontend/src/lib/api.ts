@@ -49,3 +49,58 @@ export async function fetchWithAuth(endpoint: string, options: RequestInit = {})
 
   return response;
 }
+
+export async function searchPapers(query: string, paperId?: string, topK = 5) {
+  const res = await fetchWithAuth('/papers/search', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ query, paper_id: paperId, top_k: topK }),
+  });
+  if (!res.ok) throw new Error('Search failed');
+  return res.json();
+}
+
+export async function chatWithPaper(message: string, paperId?: string, chatHistory?: any[]) {
+  const res = await fetchWithAuth('/papers/chat', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ message, paper_id: paperId, chat_history: chatHistory }),
+  });
+  if (!res.ok) throw new Error('Chat failed');
+  return res.json();
+}
+
+export async function fetchPaperSummary(paperId: string) {
+  const res = await fetchWithAuth(`/papers/${paperId}/summary`);
+  if (!res.ok) throw new Error('Summary fetch failed');
+  return res.json();
+}
+
+export async function fetchPaperNotes(paperId: string) {
+  const res = await fetchWithAuth(`/papers/${paperId}/notes`);
+  if (!res.ok) throw new Error('Notes fetch failed');
+  return res.json();
+}
+
+export async function createPaperNote(paperId: string, content: string, pageNumber?: number) {
+  const res = await fetchWithAuth(`/papers/${paperId}/notes`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ content, page_number: pageNumber }),
+  });
+  if (!res.ok) throw new Error('Note creation failed');
+  return res.json();
+}
+
+export async function deletePaperNote(noteId: string) {
+  const res = await fetchWithAuth(`/notes/${noteId}`, {
+    method: 'DELETE',
+  });
+  if (!res.ok) throw new Error('Note deletion failed');
+}
+
+export function getPaperPdfUrl(paperId: string): string {
+  const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
+  return `${API_BASE}/papers/${paperId}/pdf`;
+}
+
