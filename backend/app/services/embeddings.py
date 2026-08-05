@@ -66,3 +66,21 @@ def generate_embeddings(texts: List[str]) -> List[List[float]]:
 def generate_single_embedding(text: str) -> List[float]:
     embeddings = generate_embeddings([text])
     return embeddings[0] if embeddings else [0.0] * settings.EMBEDDING_DIM
+
+
+def cosine_similarity(vec_a: List[float], vec_b: List[float]) -> float:
+    """
+    Calculates cosine similarity between two float vectors.
+    Returns a value between -1.0 and 1.0 (higher = more similar).
+    """
+    if not vec_a or not vec_b or len(vec_a) != len(vec_b):
+        return 0.0
+    import numpy as np
+    a = np.array(vec_a, dtype=np.float32)
+    b = np.array(vec_b, dtype=np.float32)
+    norm_a = np.linalg.norm(a)
+    norm_b = np.linalg.norm(b)
+    if norm_a == 0 or norm_b == 0:
+        return 0.0
+    return float(np.dot(a, b) / (norm_a * norm_b))
+
