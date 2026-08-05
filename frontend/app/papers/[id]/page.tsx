@@ -3,13 +3,14 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import Header from '../../../src/components/Header';
-import PaperChat from '../../../src/components/PaperChat';
-import PaperNotes from '../../../src/components/PaperNotes';
-import PaperSummary from '../../../src/components/PaperSummary';
-import StatusBadge from '../../../src/components/StatusBadge';
-import { PaperDetail } from '../../../src/types';
-import { fetchWithAuth, getPaperPdfUrl } from '../../../src/lib/api';
+import Header from '@/components/Header';
+import PaperChat from '@/components/PaperChat';
+import PaperNotes from '@/components/PaperNotes';
+import PaperSummary from '@/components/PaperSummary';
+import StatusBadge from '@/components/StatusBadge';
+import { PaperDetail } from '@/types';
+import { fetchWithAuth, getPaperPdfUrl } from '@/lib/api';
+
 
 export default function PaperDetailPage() {
   const params = useParams();

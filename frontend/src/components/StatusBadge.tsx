@@ -46,3 +46,6 @@ export function StatusBadge({ status, errorMessage }: StatusBadgeProps) {
       );
   }
 }
+
+export default StatusBadge;
+
