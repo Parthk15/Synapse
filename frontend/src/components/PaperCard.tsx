@@ -6,6 +6,8 @@ import { StatusBadge } from './StatusBadge';
 import { FileText, Trash2, Calendar, BookOpen, Layers } from 'lucide-react';
 import { fetchWithAuth } from '@/lib/api';
 
+import Link from 'next/link';
+
 interface PaperCardProps {
   paper: Paper;
   onDeleteSuccess: () => void;
@@ -47,7 +49,7 @@ export function PaperCard({ paper, onDeleteSuccess }: PaperCardProps) {
   };
 
   return (
-    <div className="group relative flex flex-col justify-between rounded-2xl border border-zinc-800 bg-zinc-900/50 p-5 backdrop-blur-sm hover:border-zinc-700 hover:bg-zinc-900/90 transition-all duration-200 shadow-sm hover:shadow-md">
+    <div className="group relative flex flex-col justify-between rounded-2xl border border-zinc-800 bg-zinc-900/50 p-5 backdrop-blur-sm hover:border-indigo-500/40 hover:bg-zinc-900/90 transition-all duration-200 shadow-sm hover:shadow-md">
       <div>
         {/* Header line: Status + Actions */}
         <div className="flex items-center justify-between gap-2 mb-3">
@@ -64,7 +66,7 @@ export function PaperCard({ paper, onDeleteSuccess }: PaperCardProps) {
         </div>
 
         {/* Paper title & file */}
-        <div className="space-y-1">
+        <Link href={`/papers/${paper.id}`} className="space-y-1 block group-hover:cursor-pointer">
           <h4 className="font-semibold text-zinc-100 text-base leading-snug line-clamp-2 tracking-tight group-hover:text-indigo-300 transition-colors">
             {paper.title}
           </h4>
@@ -72,21 +74,25 @@ export function PaperCard({ paper, onDeleteSuccess }: PaperCardProps) {
             <FileText className="h-3.5 w-3.5 shrink-0" />
             <span className="truncate">{paper.filename}</span>
           </div>
-        </div>
+        </Link>
       </div>
 
-      {/* Footer stats */}
+      {/* Footer stats & Read action */}
       <div className="mt-5 pt-3 border-t border-zinc-800/80 flex items-center justify-between text-xs text-zinc-400">
         <div className="flex items-center gap-1.5">
           <BookOpen className="h-3.5 w-3.5 text-zinc-500" />
-          <span>{paper.page_count > 0 ? `${paper.page_count} pages` : 'Pending pages'}</span>
+          <span>{paper.page_count > 0 ? `${paper.page_count} pages` : 'Pending'}</span>
         </div>
 
-        <div className="flex items-center gap-1.5 font-mono text-zinc-500">
-          <Calendar className="h-3.5 w-3.5" />
-          <span>{formatDate(paper.uploaded_at)}</span>
-        </div>
+        <Link
+          href={`/papers/${paper.id}`}
+          className="inline-flex items-center gap-1 text-xs font-medium text-indigo-400 hover:text-indigo-300 transition-colors"
+        >
+          <span>Read & Chat</span>
+          <span>→</span>
+        </Link>
       </div>
     </div>
   );
 }
+
