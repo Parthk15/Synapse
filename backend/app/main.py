@@ -6,7 +6,14 @@ from sqlalchemy import text
 from app.core.config import settings
 from app.api.v1.auth import router as auth_router
 from app.api.v1.papers import router as papers_router
-from app.db.database import SessionLocal
+from app.api.v1.notes import router as notes_router
+from app.db.database import SessionLocal, engine, Base
+import app.models.user
+import app.models.paper
+import app.models.note
+
+# Auto-create tables if they do not exist
+Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
@@ -35,6 +42,8 @@ os.makedirs(settings.UPLOAD_DIR, exist_ok=True)
 # Include routers
 app.include_router(auth_router, prefix=settings.API_V1_STR)
 app.include_router(papers_router, prefix=settings.API_V1_STR)
+app.include_router(notes_router, prefix=settings.API_V1_STR)
+
 
 
 @app.get("/")
