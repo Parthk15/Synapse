@@ -4,11 +4,14 @@ An AI-powered research workspace that helps you upload, understand, organize, an
 
 ## Features
 
-- 📄 **PDF Upload** — drag-and-drop upload with background processing
-- 🔍 **Page-Aware Chunking** — preserves exact page locations using PyMuPDF
-- 🧠 **Vector Embeddings** — OpenAI or local SentenceTransformers fallback
+- 📄 **PDF Upload & Reader** — drag-and-drop upload with background processing & browser PDF streaming
+- 🔍 **Semantic Vector Search** — real-time embedding similarity search across all paper chunks
+- 🤖 **RAG AI Q&A Assistant** — interactive chat with exact page numbers & citation snippets
+- 🧠 **Executive Summaries** — auto-extracted methodologies, key findings, and research takeaways
+- 📝 **Paper Annotations & Notes** — user notes management with page tagging
+- 🧠 **Page-Aware Chunking** — preserves exact page locations using PyMuPDF
 - 🔐 **JWT Auth** — access + refresh token flow
-- 📚 **Paper Library** — search, filter, and manage your paper collection
+- 📚 **Paper Library** — search, filter, sort, and manage your paper collection
 
 ## Tech Stack
 
@@ -64,8 +67,15 @@ OPENAI_API_KEY=sk-...          # optional — local model used if absent
 | `POST` | `/api/v1/auth/refresh` | Refresh access token |
 | `GET`  | `/api/v1/auth/me` | Get current user |
 | `POST` | `/api/v1/papers/upload` | Upload a PDF |
-| `GET`  | `/api/v1/papers` | List papers (supports `?status_filter=ready`) |
+| `GET`  | `/api/v1/papers` | List papers (supports filtering, sorting & pagination) |
 | `GET`  | `/api/v1/papers/{id}` | Get paper detail + chunk count |
+| `GET`  | `/api/v1/papers/{id}/pdf` | Stream original PDF file |
+| `POST` | `/api/v1/papers/search` | Semantic vector search across paper library |
+| `POST` | `/api/v1/papers/chat` | RAG AI Q&A with verified page citations |
+| `GET`  | `/api/v1/papers/{id}/summary` | Auto-generated paper summary & key findings |
+| `GET`  | `/api/v1/papers/{id}/notes` | List paper annotations & user notes |
+| `POST` | `/api/v1/papers/{id}/notes` | Create paper annotation with page tag |
+| `DELETE` | `/api/v1/notes/{id}` | Delete a paper note |
 | `DELETE` | `/api/v1/papers/{id}` | Delete a paper |
 | `GET`  | `/health` | DB connectivity health check |
 
